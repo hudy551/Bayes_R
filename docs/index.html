@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Cvičení z bayesovské statistiky</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Kateřina Hudáčová</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Journal.html">Journal</a>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Cvičení z bayesovské statistiky</h1>
+
+</div>
+
+
+<p>V rámci plnění zápočtu k předmětu “Cvičení z bayesovské statistiky” jsem se rozhodla pracovat s datasetem <strong>trees</strong> (dostupný v R), který obsahuje informace o průměru, výšce a objemu dřeva u 31 střemch pozdních (černá třešeň). Konkrétně se zaměřím na vztah mezi průměrem a objemem – průměr jako nezávislá proměnná, objem jako závislá proměnná. Sloupec s průměrem jsem na základě doplňujících informací k datasetu přejmenovala z původního <em>“Girth”</em> na vhodnější <em>“Diameter”</em>.</p>
+<div id="frekventistická-analýza" class="section level2">
+<h2>Frekventistická analýza</h2>
+<div id="vizualizace" class="section level3">
+<h3>Vizualizace</h3>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Bodový graf průměru a objemu naznačuje existenci lineárního vztahu, čímž je splněn první předpoklad pro použití jednoduché lineární regrese. Vztah lze formulovat jako <span class="math inline">\(Volume_i = \alpha + \beta * Diameter_i\)</span>.</p>
+</div>
+<div id="lineární-regrese" class="section level3">
+<h3>Lineární regrese</h3>
+<pre class="r"><code>model.1 &lt;- lm(Volume ~ Diameter, data = trees)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Graf <em>Residual vs Fitted</em> zkoumá linearitu vztahu. Křivka poukazuje na podhodnocování objemu stromů s menším průměrem, nadhodnocování objemu u stromů se středními hodnotami průměru a opět na podhodnocování u větších průměrů.</p>
+<p>Graf <em>Normal Q-Q</em> ukazuje na relativně přijatelně normální rozdělení reziduálů s výraznějšími odchylkami u krajních hodnot.</p>
+<p><em>Scale-Location</em> graf poukazuje na relativně nerovnoměrné rozložení reziduálů (heteroskedasticita) – variabilita reziduálů u nižších predikovaných hodnot kolísá a od určitého bodu se s rostoucími predikcemi zvyšuje.</p>
+<p>Poslední graf (<em>Residuals vs Leverage</em>) zvýrazňuje vlivnou extrémní hodnotu.</p>
+<pre><code>## 
+## Call:
+## lm(formula = Volume ~ Diameter, data = trees)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -8.065 -3.107  0.152  3.495  9.587 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -36.9435     3.3651  -10.98 7.62e-12 ***
+## Diameter      5.0659     0.2474   20.48  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4.252 on 29 degrees of freedom
+## Multiple R-squared:  0.9353, Adjusted R-squared:  0.9331 
+## F-statistic: 419.4 on 1 and 29 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Nízká p-hodnota (<span class="math inline">\(2*10^-16\)</span>) naznačuje, že bychom se v rámci klasického testování hypotéz přikláněli k hypotéze alternativní (existence vztahu mezi průměrem a objemem). Model vyhodnotil, že s nárůstem průměru o 1 palec se objem navyšuje o cca 5.1 stop krychlových. Lineární model dokáže vysvětlit zhruba 94% variability objemu, adjustované <span class="math inline">\(R^2\)</span> se od koeficientu determinace z povahy modelu příliš neliší.</p>
+<pre><code>##                  2.5 %     97.5 %
+## (Intercept) -43.825953 -30.060965
+## Diameter      4.559914   5.571799</code></pre>
+<p>Konfidenční interval pro beta koeficient (<span class="math inline">\(\beta\)</span> = 5.07, 95 % CI [4.56, 5.57]) lze v tomto kontextu chápat jako rozmezí plauzibilních hodnot skutečného beta koeficientu, který je neznámý, ale fixně daný, přičemž bychom v rámci opakovaného sběru z dané populace (v tomto případě např. oblasti lesa) mohli očekávat, že 95% z takto sestrojených intervalů bude pokrývat skutečnou hodnotu <span class="math inline">\(\beta\)</span>.</p>
+</div>
+</div>
+<div id="bayesovská-analýza" class="section level2">
+<h2>Bayesovská analýza</h2>
+<p>Likelihood modelu:</p>
+<ul>
+<li><span class="math inline">\(v_i\)</span> ~ N(<span class="math inline">\(\mu_i, \sigma\)</span>)</li>
+</ul>
+<p>Priors:</p>
+<ul>
+<li><span class="math inline">\(\mu_i\)</span> = <span class="math inline">\(\alpha + \beta*x_i\)</span></li>
+<li>$~ Normal(30, 5)</li>
+<li>$~ Normal(5, 2.2)</li>
+<li><span class="math inline">\(\sigma\)</span> ~ Cauchy(0, 20)</li>
+</ul>
+<p>Na základě velmi obecných informací o tomto druhu stromu jsem předpokládala, že průměrná výška se bude pohybovat okolo 20m a průměr kmene zpravidla nepřesáhne 20 palců (cca 50cm). Z těchto hypotetických rozměrů plyne, že objem stromů by povětšinou neměl přesáhnout 80 stop krychlových. Usoudila jsem, že by objem mohl být distribuovaný okolo průměru <span class="math inline">\(30ft^3\)</span> se směrodatnou odchylkou <span class="math inline">\(5t^3\)</span>.</p>
+<p>Předpokládala jsem, že sklon <span class="math inline">\(\beta\)</span> bude spíše pozitivní, přičemž by změna průměru o 1 palec měla vést jen k poměrně malé změně objemu ve stopách krychlových. Směrodatnou odchylku jsem opět zvolila širší.</p>
+<p>Prior pro <span class="math inline">\(\sigma\)</span> jsem zvolila nepříliš informativní half-cauchy distribuci s parametrem A = 20.</p>
+<p>Prior predictive check:</p>
+<pre class="r"><code>set.seed(123)
+n &lt;- 100
+a &lt;- rnorm(n, 40, 5)
+b &lt;- rnorm(n, 5, 2.2)
+
+plot( NULL , xlim=range(trees$Diameter) , ylim=c(0, 80) , 
+      xlab=&quot;Průměr (palce)&quot; , ylab=&quot;Objem (stopy kubické)&quot; )
+mtext( &quot;b ~ dnorm(5, 2)&quot; )
+xbar &lt;- mean(trees$Diameter) 
+for ( i in 1:n ) curve( a[i] + b[i]*(x - xbar) ,
+                        from=min(trees$Diameter) , to=max(trees$Diameter) , add=TRUE)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Graf vytvořený v rámci pror predictive check působí relativně vhodně, většina regresních přímek je přijatelná. Výjimku tvoří menšina přímek, která zobrazuje nulový či záporný objem při nenulovém průměru.</p>
+<div id="model" class="section level3">
+<h3>Model</h3>
+<pre class="r"><code>set.seed(549)
+
+model.2 &lt;- brm(data = trees, family = gaussian,
+      Volume ~ 1 + Diameter,
+      prior = c(prior(normal(30, 5), class = Intercept),
+                prior(normal(5, 2.2), class = b),
+                prior(cauchy(0, 20), class = sigma)),
+      iter = 40000, warmup = 15000, chains = 6, cores = 6, seed = 234)</code></pre>
+<pre class="r"><code>plot(model.2)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre><code>##               Estimate Est.Error       Q2.5      Q97.5
+## b_Intercept -36.948233 3.5184854 -43.890633 -30.022446
+## b_Diameter    5.065769 0.2587522   4.555884   5.577106
+## sigma         4.436086 0.6145351   3.425480   5.823274</code></pre>
+<p>Posterior summary ukazuje bodový odhad parametru <span class="math inline">\(\alpha\)</span>, tedy interceptu, na ~ -37, přičemž 95% posterior probability interval (“compatibility interval”) má dolní hranici -44 a horní hranici -30. To znamená, že objem imaginárního stromu s nulovým průměrem by měl s 95% pravděpodobností spadat do tohoto rozmezí hodnot. Bodový odhad <span class="math inline">\(\beta\)</span>, tedy nárůst objemu se zvýšením průměru o jeden palec, byl modelem určen jako cca 5,1 s 95% compatibility intervalem mezi 4.56 a 5.57.</p>
+<p>Regresní přímka + data:</p>
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>Nyní vykreslíme na grafu predikce průměrného objemu pro strom s průměrem o 10 palcích:</p>
+<pre class="r"><code>post &lt;- posterior_samples(model.2)</code></pre>
+<pre><code>## Warning: Method &#39;posterior_samples&#39; is deprecated. Please see ?as_draws for
+## recommended alternatives.</code></pre>
+<pre class="r"><code>mu_at_14 &lt;- post %&gt;% 
+  transmute(mu_at_14 = b_Intercept + b_Diameter * 14)
+
+ggplot(data = mu_at_14, 
+       aes(x = mu_at_14)) +
+  geom_density(size = 0, fill = &quot;royalblue&quot;) +
+  labs(x = expression(mu[&quot;Objem | Průměr = 14 palců&quot;])) +
+  theme_bw(base_size = 14)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>89% a 95% Highest posterior density interval (HPDI):</p>
+<pre class="r"><code>mean_hdi(mu_at_14[,1], .width = c(.89, .95))</code></pre>
+<pre><code>##          y     ymin     ymax .width .point .interval
+## 1 33.97253 32.68551 35.28306   0.89   mean       hdi
+## 2 33.97253 32.32579 35.54965   0.95   mean       hdi</code></pre>
+<p>95% HPDI pro průměrný objemu stromu s průměrem 14 palců leží má dolní hranici 32,4 a horní hranici 35,6 stop krychlových.</p>
+<p>Vykreslení 95% HPDI na density grafu:</p>
+<pre class="r"><code>ggplot(data = mu_at_14, 
+       aes(x = mu_at_14)) +
+  geom_density(size = 0, fill = &quot;royalblue&quot;) +
+   stat_pointinterval(aes(y = 0), 
+                      point_interval = mode_hdi, .width = .95) +
+  labs(x = expression(mu[&quot;Objem | Průměr = 14 palců&quot;])) +
+  theme_bw(base_size = 14)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
